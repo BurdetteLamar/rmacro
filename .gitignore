@@ -1,4 +1,9 @@
+/.bundle/
+/.yardoc
+/_yardoc/
+/coverage/
+/html/
 /pkg/
-/html
-.gitignore
-.idea
+/spec/reports/
+/tmp/
+Gemfile.lock
