@@ -1,2 +1,4 @@
-     /pkg/
-     /html
+/pkg/
+/html
+.gitignore
+.idea
