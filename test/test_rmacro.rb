@@ -7,7 +7,17 @@ class TestRmacro < Minitest::Test
     refute_nil ::Rmacro::VERSION
   end
 
-  def test_it_does_something_useful
-    assert false
+  def test_new_with_good_argument
+    strio = StringIO.new('')
+    RMacro.new(strio)
+    assert(true) # Nothing raised.
   end
+
+  def test_new_with_bad_argument
+    e = assert_raises ArgumentError do
+      RMacro.new('foo')
+    end
+    assert_match(/lacks methods/, e.message)
+  end
+
 end
