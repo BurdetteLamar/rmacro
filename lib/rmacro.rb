@@ -2,6 +2,8 @@ require_relative "rmacro/version"
 
 class RMacro
 
+  attr_accessor :instream
+
   TOKEN_MAX_SIZE = 100
   REQUIRED_METHODS = %i[getc ungetc pos eof]
 
@@ -11,24 +13,24 @@ class RMacro
       message = "Input stream #{instream.class} lacks methods: #{missing_methods.join(', ')}"
       raise ArgumentError, message
     end
-    @instream = instream
+    self.instream = instream
   end
 
   def gettok
     token = ''
     (0..).each do |i|
-      if @instream.eof
+      if instream.eof
         return token.empty? ? nil : token
       end
-      c = @instream.getc
+      c = instream.getc
       if c.match(/\w/)
         if i == TOKEN_MAX_SIZE
-          message = "Token '#{token}' too long at position #{@instream.pos}"
+          message = "Token '#{token}' too long at position #{instream.pos}"
           raise RuntimeError.new(message)
         end
         token += c
       else
-        @instream.ungetc(c)
+        instream.ungetc(c)
         return token.empty? ? nil : token
       end
     end
