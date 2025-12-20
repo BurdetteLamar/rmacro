@@ -4,7 +4,7 @@ require_relative "lib/rmacro/version"
 
 Gem::Specification.new do |spec|
   spec.name = "rmacro"
-  spec.version = Rmacro::VERSION
+  spec.version = RMacro::VERSION
   spec.authors = ["BurdetteLamar"]
   spec.email = ["burdettelamar@yahoo.com"]
 

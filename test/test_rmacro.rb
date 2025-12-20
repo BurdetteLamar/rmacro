@@ -4,7 +4,7 @@ require "test_helper"
 
 class TestRmacro < Minitest::Test
   def test_that_it_has_a_version_number
-    refute_nil ::Rmacro::VERSION
+    refute_nil ::RMacro::VERSION
   end
 
   def test_new_with_good_argument

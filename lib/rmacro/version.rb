@@ -1,5 +1,5 @@
 # frozen_string_literal: true
 
-class Rmacro
+class RMacro
   VERSION = "0.1.0"
 end
