@@ -36,22 +36,22 @@ class TestRmacro < Minitest::Test
       end
       assert_instance_of(IOError, e)
       assert_match(/not opened for reading/, e.message)
+    end
+  end
+
+  def test_new_with_bad_outstream
+    TestRmacro.streams do |instream, outstream|
+      e = assert_raises ArgumentError do
+        RMacro.new(instream, 'foo')
+      end
+      assert_match(/Output/, e.message)
+      assert_match(/lacks methods/, e.message)
       outstream.close
       e = assert_raises StandardError do
         outstream.putc('x')
       end
       assert_instance_of(IOError, e)
       assert_match(/not opened for writing/, e.message)
-    end
-  end
-
-  def test_new_with_bad_outstream
-    TestRmacro.streams do |instream, _|
-      e = assert_raises ArgumentError do
-        RMacro.new(instream, 'foo')
-      end
-      assert_match(/Output/, e.message)
-      assert_match(/lacks methods/, e.message)
     end
   end
 
