@@ -9,19 +9,39 @@ class TestRmacro < Minitest::Test
   end
 
   def test_new_with_good_arguments
+    # StringIO for both.
     TestRmacro.streams do |instream, outstream|
       RMacro.new(instream, outstream)
       assert(true) # Nothing raised.
     end
+    # File for both.
+    Dir.mktmpdir do |dir|
+      File.open('t.txt', File::RDWR) do |file|
+        RMacro.new(file, file)
+        assert(true) # Nothing raised.
+      end
+    end
   end
 
   def test_new_with_bad_instream
-    TestRmacro.streams do |_, outstream|
-      e = assert_raises ArgumentError do
+    TestRmacro.streams do |instream, outstream|
+      e = assert_raises StandardError do
         RMacro.new('foo', outstream)
       end
       assert_match(/Input/, e.message)
       assert_match(/lacks methods/, e.message)
+      instream.close
+      e = assert_raises StandardError do
+        instream.getc
+      end
+      assert_instance_of(IOError, e)
+      assert_match(/not opened for reading/, e.message)
+      outstream.close
+      e = assert_raises StandardError do
+        outstream.putc('x')
+      end
+      assert_instance_of(IOError, e)
+      assert_match(/not opened for writing/, e.message)
     end
   end
 

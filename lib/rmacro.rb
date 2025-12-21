@@ -23,7 +23,7 @@ class RMacro
       c = instream.getc
       if c.match(/\w/)
         if i == TOKEN_MAX_SIZE
-          message = "Token '#{token}' too long at position #{instream.pos}"
+          message = "Token '#{token}' too long at position #{instream.pos}."
           raise RuntimeError.new(message)
         end
         token += c
@@ -37,7 +37,7 @@ class RMacro
   def self.check_streams(instream, outstream)
     missing_input_methods = REQUIRED_INPUT_METHODS - instream.methods
     unless missing_input_methods.empty?
-      message = "Input stream #{instream.class} lacks methods: #{missing_input_methods.join(', ')}"
+      message = "Input stream #{instream.class} lacks methods: #{missing_input_methods.join(', ')}."
       raise ArgumentError, message
     end
     missing_output_methods = REQUIRED_OUTPUT_METHODS - outstream.methods
