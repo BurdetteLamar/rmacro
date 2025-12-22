@@ -55,4 +55,21 @@ class TestRmacro < Minitest::Test
     end
   end
 
+  def test_no_tokens
+    instring = ' '
+    TestRmacro.streams(instring) do |instream, outstream|
+      m = RMacro.new(instream, outstream)
+      assert_nil(m.gettok)
+    end
+  end
+
+  def test_token
+    instring = ' foo bar baz '
+    TestRmacro.streams(instring) do |instream, outstream|
+      m = RMacro.new(instream, outstream)
+      m.expand
+    end
+  end
+
+
 end

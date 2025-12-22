@@ -14,22 +14,32 @@ class RMacro
     self.outstream = outstream
   end
 
+  def expand
+    until instream.eof?
+      token = gettok
+    end
+  end
+
   def gettok
     token = ''
-    (0..).each do |i|
+    while true do
       if instream.eof
         return token.empty? ? nil : token
       end
       c = instream.getc
-      if c.match(/\w/)
-        if i == TOKEN_MAX_SIZE
-          message = "Token '#{token}' too long at position #{instream.pos}."
+      unless c.match(/\w/)
+        if token.empty?
+          outstream.putc(c)
+        else
+          instream.ungetc(c)
+          return token.empty? ? nil : token
+        end
+      else
+        token += c
+        if token.size > TOKEN_MAX_SIZE
+          message = "Token '#{token}' too long (#{token.size}) at position #{instream.pos}."
           raise RuntimeError.new(message)
         end
-        token += c
-      else
-        instream.ungetc(c)
-        return token.empty? ? nil : token
       end
     end
   end

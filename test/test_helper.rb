@@ -7,9 +7,9 @@ require "minitest/autorun"
 
 class TestRmacro < Minitest::Test
 
-  def self.streams(instring = nil, outstring = nil)
-    instream = StringIO.new(instring)
-    outstream = StringIO.new(outstring)
+  def self.streams(instring = '', outstring = '')
+    instream = StringIO.new(String.new(instring), 'r')
+    outstream = StringIO.new(String.new(outstring), 'w')
     yield instream, outstream
   end
 
