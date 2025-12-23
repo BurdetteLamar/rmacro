@@ -10,7 +10,7 @@ class TestRmacro < Minitest::Test
   end
 
   def test_too_long
-    instring = 'x' * (RMacro::TOKEN_MAX_SIZE + 1)
+    instring = '.' + ('x' * RMacro::TOKEN_MAX_SIZE)
     TestRmacro.streams(instring) do |instream, outstream|
       m = RMacro.new(instream, outstream)
       e = assert_raises(RuntimeError) { m.gettok }
@@ -19,7 +19,7 @@ class TestRmacro < Minitest::Test
   end
 
   def test_length_ok
-    instring = 'x' * RMacro::TOKEN_MAX_SIZE
+    instring = '.' + ('x' * (RMacro::TOKEN_MAX_SIZE - 1))
     TestRmacro.streams(instring) do |instream, outstream|
       m = RMacro.new(instream, outstream)
       assert_equal(instring, m.gettok)

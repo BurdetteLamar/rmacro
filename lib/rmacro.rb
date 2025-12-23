@@ -2,16 +2,26 @@ require_relative "rmacro/version"
 
 class RMacro
 
-  attr_accessor :instream, :outstream
+  attr_accessor :instream, :outstream, :macro
 
   TOKEN_MAX_SIZE = 100
   REQUIRED_INPUT_METHODS = %i[getc ungetc pos eof]
   REQUIRED_OUTPUT_METHODS = %i[putc]
 
+
   def initialize(instream, outstream)
     RMacro.check_streams(instream, outstream)
     self.instream = instream
     self.outstream = outstream
+    self.macro = {}
+  end
+
+  def define(name, expansion)
+    macro[name] = expansion
+  end
+
+  def undefine(name)
+    macro.delete(name)
   end
 
   def expand
@@ -27,20 +37,48 @@ class RMacro
         return token.empty? ? nil : token
       end
       c = instream.getc
-      unless c.match(/\w/)
-        if token.empty?
+      case token.size
+      when 0 # Only '.' can begin a token.
+        if c == '.'
+          token += c
+        else
           outstream.putc(c)
+        end
+      when 1 # Only a letter can be the second character of a token.
+        if c.match(/[a-zA-Z]/)
+          token += c
+        else
+          outstream.write(token)
+          outstream.putc(c)
+          token = ''
+        end
+      else # Only a word character can continue the token.
+        if c.match(/\w/)
+          token += c
         else
           instream.ungetc(c)
-          return token.empty? ? nil : token
-        end
-      else
-        token += c
-        if token.size > TOKEN_MAX_SIZE
-          message = "Token '#{token}' too long (#{token.size}) at position #{instream.pos}."
-          raise RuntimeError.new(message)
+          return token
         end
       end
+      if token.size > TOKEN_MAX_SIZE
+        message = "Token '#{token}' too long (#{token.size}) at position #{instream.pos}."
+        raise RuntimeError.new(message)
+      end
+
+      # unless c.match(/\w/)
+      #   if token.empty?
+      #     outstream.putc(c)
+      #   else
+      #     instream.ungetc(c)
+      #     return token.empty? ? nil : token
+      #   end
+      # else
+      #   token += c
+      #   if token.size > TOKEN_MAX_SIZE
+      #     message = "Token '#{token}' too long (#{token.size}) at position #{instream.pos}."
+      #     raise RuntimeError.new(message)
+      #   end
+      # end
     end
   end
 
