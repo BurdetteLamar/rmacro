@@ -26,7 +26,8 @@ class RMacro
 
   def expand
     until instream.eof?
-      token = gettok
+      tok = gettok
+      outstream.write(tok)
     end
   end
 
@@ -37,48 +38,31 @@ class RMacro
         return token.empty? ? nil : token
       end
       c = instream.getc
-      case token.size
-      when 0 # Only '.' can begin a token.
-        if c == '.'
-          token += c
-        else
+      unless c.match(/\w/)
+        if token.empty?
           outstream.putc(c)
-        end
-      when 1 # Only a letter can be the second character of a token.
-        if c.match(/[a-zA-Z]/)
-          token += c
-        else
-          outstream.write(token)
-          outstream.putc(c)
-          token = ''
-        end
-      else # Only a word character can continue the token.
-        if c.match(/\w/)
-          token += c
+          next
         else
           instream.ungetc(c)
-          return token
+          return token.empty? ? nil : token
         end
+      end
+      if token.empty?
+        if c.match(/0-9/)
+          # Digit cannot begin a token.
+          outstream.putc(c)
+        else
+          # Start a new token.
+          token += c
+        end
+      else
+        # Continue token.
+        token += c
       end
       if token.size > TOKEN_MAX_SIZE
         message = "Token '#{token}' too long (#{token.size}) at position #{instream.pos}."
         raise RuntimeError.new(message)
       end
-
-      # unless c.match(/\w/)
-      #   if token.empty?
-      #     outstream.putc(c)
-      #   else
-      #     instream.ungetc(c)
-      #     return token.empty? ? nil : token
-      #   end
-      # else
-      #   token += c
-      #   if token.size > TOKEN_MAX_SIZE
-      #     message = "Token '#{token}' too long (#{token.size}) at position #{instream.pos}."
-      #     raise RuntimeError.new(message)
-      #   end
-      # end
     end
   end
 

@@ -64,10 +64,11 @@ class TestRmacro < Minitest::Test
   end
 
   def test_token
-    instring = ' .foo .bar .baz '
+    instring = ' foo bar baz '
     TestRmacro.streams(instring) do |instream, outstream|
       m = RMacro.new(instream, outstream)
       m.expand
+      assert_equal(instream.string, outstream.string)
     end
   end
 
