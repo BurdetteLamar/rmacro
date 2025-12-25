@@ -7,10 +7,18 @@ require "minitest/autorun"
 
 class TestRmacro < Minitest::Test
 
-  def self.streams(instring = '', outstring = '')
-    instream = StringIO.new(String.new(instring), 'r')
-    outstream = StringIO.new(String.new(outstring), 'w')
+  def streams(instring = '', outstring = '')
+    instream = StringIO.new(String.new(instring), 'r+')
+    outstream = StringIO.new(String.new(outstring), 'r+')
     yield instream, outstream
+  end
+
+  def do_test(instring, expected)
+    streams(instring, expected) do |instream, outstream|
+      m = RMacro.new(instream, outstream)
+      m.expand
+      assert_equal(expected, outstream.string)
+    end
   end
 
 end

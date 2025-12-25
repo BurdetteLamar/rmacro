@@ -10,7 +10,7 @@ class TestRmacro < Minitest::Test
 
   def test_new_with_good_arguments
     # StringIO for both.
-    TestRmacro.streams do |instream, outstream|
+    streams do |instream, outstream|
       RMacro.new(instream, outstream)
       assert(true) # Nothing raised.
     end
@@ -24,7 +24,7 @@ class TestRmacro < Minitest::Test
   end
 
   def test_new_with_bad_instream
-    TestRmacro.streams do |instream, outstream|
+    streams do |instream, outstream|
       e = assert_raises StandardError do
         RMacro.new('foo', outstream)
       end
@@ -40,7 +40,7 @@ class TestRmacro < Minitest::Test
   end
 
   def test_new_with_bad_outstream
-    TestRmacro.streams do |instream, outstream|
+    streams do |instream, outstream|
       e = assert_raises ArgumentError do
         RMacro.new(instream, 'foo')
       end
@@ -57,20 +57,24 @@ class TestRmacro < Minitest::Test
 
   def test_no_tokens
     instring = ' '
-    TestRmacro.streams(instring) do |instream, outstream|
+    streams(instring) do |instream, outstream|
       m = RMacro.new(instream, outstream)
       assert_nil(m.gettok)
     end
   end
 
-  def test_token
-    instring = ' foo bar baz '
-    TestRmacro.streams(instring) do |instream, outstream|
-      m = RMacro.new(instream, outstream)
-      m.expand
-      assert_equal(instream.string, outstream.string)
-    end
+  def test_no_macros
+    instring = ' foo bar baz'
+    do_test(instring, instring)
   end
 
-
+  def test_dnl
+    {
+      "foo dnl bar" => "foo ",
+      "foo dnl" => "foo ",
+      "foo dnl bar\nbaz" => "foo baz"
+    }.each_pair do |instring, expected|
+      do_test(instring, expected)
+    end
+  end
 end

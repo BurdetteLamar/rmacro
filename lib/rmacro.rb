@@ -2,7 +2,7 @@ require_relative "rmacro/version"
 
 class RMacro
 
-  attr_accessor :instream, :outstream, :macro
+  attr_accessor :instream, :outstream, :macros
 
   TOKEN_MAX_SIZE = 100
   REQUIRED_INPUT_METHODS = %i[getc ungetc pos eof]
@@ -13,21 +13,25 @@ class RMacro
     RMacro.check_streams(instream, outstream)
     self.instream = instream
     self.outstream = outstream
-    self.macro = {}
-  end
-
-  def define(name, expansion)
-    macro[name] = expansion
-  end
-
-  def undefine(name)
-    macro.delete(name)
+    self.macros = initialized_macros
   end
 
   def expand
     until instream.eof?
       tok = gettok
-      outstream.write(tok)
+      value = macros[tok]
+      if value.nil?
+        outstream.write(tok)
+      else
+        value = value.first
+        case value
+        when String
+          outstream.write(value)
+        when Proc
+          value.call
+        else
+        end
+      end
     end
   end
 
@@ -78,4 +82,17 @@ class RMacro
       raise ArgumentError, message
     end
   end
+
+  def dnl
+    until instream.getc == "\n"
+      return if instream.eof
+    end
+  end
+
+  def initialized_macros
+    {
+      'dnl' => [proc { dnl }]
+    }
+  end
+
 end
