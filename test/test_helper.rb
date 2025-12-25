@@ -21,4 +21,10 @@ class TestRmacro < Minitest::Test
     end
   end
 
+  def do_tests(strings)
+    strings.each_pair do |instring, expected|
+      do_test(instring, expected)
+    end
+  end
+  
 end

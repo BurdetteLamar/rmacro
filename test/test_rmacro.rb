@@ -69,12 +69,11 @@ class TestRmacro < Minitest::Test
   end
 
   def test_dnl
-    {
+    strings = {
       "foo dnl bar" => "foo ",
       "foo dnl" => "foo ",
       "foo dnl bar\nbaz" => "foo baz"
-    }.each_pair do |instring, expected|
-      do_test(instring, expected)
-    end
+    }
+    do_tests(strings)
   end
 end
