@@ -5,7 +5,7 @@ require "rmacro"
 require 'stringio'
 require "minitest/autorun"
 
-class TestRmacro < Minitest::Test
+class TestRMacro < Minitest::Test
 
   def streams(instring = '', outstring = '')
     instream = StringIO.new(String.new(instring), 'r+')

@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class TestRmacro < Minitest::Test
+class TestRMacro < Minitest::Test
 
   def test_eof
     streams do |instream, outstream|

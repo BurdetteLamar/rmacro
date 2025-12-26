@@ -10,9 +10,9 @@ class RMacro
 
 
   def initialize(instream, outstream)
-    RMacro.check_streams(instream, outstream)
     self.instream = instream
     self.outstream = outstream
+    check_streams
     self.macros = initialized_macros
   end
 
@@ -70,7 +70,7 @@ class RMacro
     end
   end
 
-  def self.check_streams(instream, outstream)
+  def check_streams
     missing_input_methods = REQUIRED_INPUT_METHODS - instream.methods
     unless missing_input_methods.empty?
       message = "Input stream #{instream.class} lacks methods: #{missing_input_methods.join(', ')}."
